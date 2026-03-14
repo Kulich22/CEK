@@ -1,199 +1,183 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
-<html>
+<!DOCTYPE html>
+<html lang="ru">
 <head>
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <meta http-equiv="Content-Style-Type" content="text/css">
-  <title></title>
-  <meta name="Generator" content="Cocoa HTML Writer">
-  <meta name="CocoaVersion" content="2685.4">
-  <style type="text/css">
-    p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
-    p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Бот для работы со счётчиками</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background: var(--tg-theme-bg-color, #ffffff);
+            color: var(--tg-theme-text-color, #000000);
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        h1 {
+            font-size: 24px;
+            margin-bottom: 10px;
+            color: var(--tg-theme-text-color, #000000);
+        }
+        
+        .subtitle {
+            font-size: 14px;
+            color: var(--tg-theme-hint-color, #999999);
+            margin-bottom: 30px;
+        }
+        
+        .menu-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+        
+        .menu-button {
+            background: var(--tg-theme-button-color, #40a7e3);
+            color: var(--tg-theme-button-text-color, #ffffff);
+            border: none;
+            border-radius: 12px;
+            padding: 16px 12px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: opacity 0.2s;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            width: 100%;
+        }
+        
+        .menu-button:active {
+            opacity: 0.8;
+        }
+        
+        .menu-button span {
+            font-size: 24px;
+        }
+        
+        .full-width {
+            grid-column: span 2;
+        }
+        
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            color: var(--tg-theme-hint-color, #999999);
+            font-size: 12px;
+            padding: 20px 0;
+        }
+        
+        /* Темная тема */
+        @media (prefers-color-scheme: dark) {
+            body {
+                background: var(--tg-theme-bg-color, #1c1c1e);
+                color: var(--tg-theme-text-color, #ffffff);
+            }
+        }
+    </style>
 </head>
 <body>
-<p class="p1">&lt;!DOCTYPE html&gt;</p>
-<p class="p1">&lt;html lang="ru"&gt;</p>
-<p class="p1">&lt;head&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;meta charset="UTF-8"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;title&gt;Бот для работы со счётчиками&lt;/title&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;script src="https://telegram.org/js/telegram-web-app.js"&gt;&lt;/script&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;style&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>* {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>margin: 0;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>padding: 0;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>box-sizing: border-box;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><span class="Apple-converted-space">        </span></p>
-<p class="p1"><span class="Apple-converted-space">        </span>body {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>background: var(--tg-theme-bg-color, #ffffff);</p>
-<p class="p1"><span class="Apple-converted-space">            </span>color: var(--tg-theme-text-color, #000000);</p>
-<p class="p1"><span class="Apple-converted-space">            </span>padding: 20px;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><span class="Apple-converted-space">        </span></p>
-<p class="p1"><span class="Apple-converted-space">        </span>.container {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>max-width: 600px;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>margin: 0 auto;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><span class="Apple-converted-space">        </span></p>
-<p class="p1"><span class="Apple-converted-space">        </span>h1 {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>font-size: 24px;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>margin-bottom: 10px;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>color: var(--tg-theme-text-color, #000000);</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><span class="Apple-converted-space">        </span></p>
-<p class="p1"><span class="Apple-converted-space">        </span>.subtitle {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>font-size: 14px;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>color: var(--tg-theme-hint-color, #999999);</p>
-<p class="p1"><span class="Apple-converted-space">            </span>margin-bottom: 30px;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><span class="Apple-converted-space">        </span></p>
-<p class="p1"><span class="Apple-converted-space">        </span>.menu-grid {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>display: grid;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>grid-template-columns: repeat(2, 1fr);</p>
-<p class="p1"><span class="Apple-converted-space">            </span>gap: 12px;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>margin-bottom: 20px;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><span class="Apple-converted-space">        </span></p>
-<p class="p1"><span class="Apple-converted-space">        </span>.menu-button {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>background: var(--tg-theme-button-color, #40a7e3);</p>
-<p class="p1"><span class="Apple-converted-space">            </span>color: var(--tg-theme-button-text-color, #ffffff);</p>
-<p class="p1"><span class="Apple-converted-space">            </span>border: none;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>border-radius: 12px;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>padding: 16px 12px;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>font-size: 14px;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>font-weight: 500;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>cursor: pointer;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>transition: opacity 0.2s;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>text-align: center;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>display: flex;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>flex-direction: column;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>align-items: center;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>gap: 8px;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><span class="Apple-converted-space">        </span></p>
-<p class="p1"><span class="Apple-converted-space">        </span>.menu-button:active {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>opacity: 0.8;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><span class="Apple-converted-space">        </span></p>
-<p class="p1"><span class="Apple-converted-space">        </span>.menu-button span {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>font-size: 24px;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><span class="Apple-converted-space">        </span></p>
-<p class="p1"><span class="Apple-converted-space">        </span>.full-width {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>grid-column: span 2;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><span class="Apple-converted-space">        </span></p>
-<p class="p1"><span class="Apple-converted-space">        </span>.footer {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>text-align: center;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>margin-top: 30px;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>color: var(--tg-theme-hint-color, #999999);</p>
-<p class="p1"><span class="Apple-converted-space">            </span>font-size: 12px;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><span class="Apple-converted-space">        </span></p>
-<p class="p1"><span class="Apple-converted-space">        </span>/* Темная тема */</p>
-<p class="p1"><span class="Apple-converted-space">        </span>@media (prefers-color-scheme: dark) {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>body {</p>
-<p class="p1"><span class="Apple-converted-space">                </span>background: var(--tg-theme-bg-color, #1c1c1e);</p>
-<p class="p1"><span class="Apple-converted-space">                </span>color: var(--tg-theme-text-color, #ffffff);</p>
-<p class="p1"><span class="Apple-converted-space">            </span>}</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;/style&gt;</p>
-<p class="p1">&lt;/head&gt;</p>
-<p class="p1">&lt;body&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="container"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;h1&gt;🤖 Бот для работы со счётчиками&lt;/h1&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="subtitle"&gt;Выберите нужный режим работы&lt;/div&gt;</p>
-<p class="p2"><span class="Apple-converted-space">        </span></p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="menu-grid"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;button class="menu-button" onclick="sendCommand('plomb')"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;span&gt;🔍&lt;/span&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>Обработка пломб</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;/button&gt;</p>
-<p class="p2"><span class="Apple-converted-space">            </span></p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;button class="menu-button" onclick="sendCommand('guarantee')"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;span&gt;📋&lt;/span&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>Реестр гарантии</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;/button&gt;</p>
-<p class="p2"><span class="Apple-converted-space">            </span></p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;button class="menu-button" onclick="sendCommand('scan')"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;span&gt;📦&lt;/span&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>Сканировать штрихкоды</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;/button&gt;</p>
-<p class="p2"><span class="Apple-converted-space">            </span></p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;button class="menu-button" onclick="sendCommand('template')"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;span&gt;📎&lt;/span&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>Загрузить шаблон</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;/button&gt;</p>
-<p class="p2"><span class="Apple-converted-space">            </span></p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;button class="menu-button" onclick="sendCommand('qr')"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;span&gt;📲&lt;/span&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>Генерация QR-кодов</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;/button&gt;</p>
-<p class="p2"><span class="Apple-converted-space">            </span></p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;button class="menu-button" onclick="sendCommand('supply')"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;span&gt;🚚&lt;/span&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>Новая поставка</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;/button&gt;</p>
-<p class="p2"><span class="Apple-converted-space">            </span></p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;button class="menu-button full-width" onclick="sendCommand('help')"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;span&gt;❓&lt;/span&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>Помощь</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;/button&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
-<p class="p2"><span class="Apple-converted-space">        </span></p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="footer"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;div id="user-info"&gt;Загрузка...&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;script&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>// Инициализация Telegram Web App</p>
-<p class="p1"><span class="Apple-converted-space">        </span>const tg = window.Telegram.WebApp;</p>
-<p class="p2"><span class="Apple-converted-space">        </span></p>
-<p class="p1"><span class="Apple-converted-space">        </span>// Сообщаем Telegram, что приложение готово</p>
-<p class="p1"><span class="Apple-converted-space">        </span>tg.ready();</p>
-<p class="p2"><span class="Apple-converted-space">        </span></p>
-<p class="p1"><span class="Apple-converted-space">        </span>// Растягиваем на всю высоту</p>
-<p class="p1"><span class="Apple-converted-space">        </span>tg.expand();</p>
-<p class="p2"><span class="Apple-converted-space">        </span></p>
-<p class="p1"><span class="Apple-converted-space">        </span>// Получаем информацию о пользователе</p>
-<p class="p1"><span class="Apple-converted-space">        </span>const user = tg.initDataUnsafe?.user;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>if (user) {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>document.getElementById('user-info').innerHTML =<span class="Apple-converted-space"> </span></p>
-<p class="p1"><span class="Apple-converted-space">                </span>`👤 ${user.first_name} ${user.last_name || ''}&lt;br&gt;ID: ${user.id}`;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>} else {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>document.getElementById('user-info').innerHTML = '👤 Пользователь не определён';</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><span class="Apple-converted-space">        </span></p>
-<p class="p1"><span class="Apple-converted-space">        </span>// Функция отправки команды в бота</p>
-<p class="p1"><span class="Apple-converted-space">        </span>function sendCommand(command) {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>// Создаем кнопку "Отправить" в Telegram</p>
-<p class="p1"><span class="Apple-converted-space">            </span>tg.MainButton.setText(`Выбрано: ${command}`);</p>
-<p class="p1"><span class="Apple-converted-space">            </span>tg.MainButton.show();</p>
-<p class="p2"><span class="Apple-converted-space">            </span></p>
-<p class="p1"><span class="Apple-converted-space">            </span>// При нажатии на кнопку отправляем данные в бота</p>
-<p class="p1"><span class="Apple-converted-space">            </span>tg.MainButton.onClick(function() {</p>
-<p class="p1"><span class="Apple-converted-space">                </span>tg.sendData(JSON.stringify({</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>action: command,</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>user_id: user?.id,</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>timestamp: Date.now()</p>
-<p class="p1"><span class="Apple-converted-space">                </span>}));</p>
-<p class="p1"><span class="Apple-converted-space">                </span>tg.close();</p>
-<p class="p1"><span class="Apple-converted-space">            </span>});</p>
-<p class="p2"><span class="Apple-converted-space">            </span></p>
-<p class="p1"><span class="Apple-converted-space">            </span>// Показываем уведомление</p>
-<p class="p1"><span class="Apple-converted-space">            </span>tg.HapticFeedback.impactOccurred('medium');</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><span class="Apple-converted-space">        </span></p>
-<p class="p1"><span class="Apple-converted-space">        </span>// Обработка кнопки "Назад" в Telegram</p>
-<p class="p1"><span class="Apple-converted-space">        </span>tg.onEvent('backButtonClicked', function() {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>tg.close();</p>
-<p class="p1"><span class="Apple-converted-space">        </span>});</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;/script&gt;</p>
-<p class="p1">&lt;/body&gt;</p>
-<p class="p1">&lt;/html&gt;</p>
+    <div class="container">
+        <h1>🤖 Бот для работы со счётчиками</h1>
+        <div class="subtitle">Выберите нужный режим работы</div>
+        
+        <div class="menu-grid">
+            <button class="menu-button" onclick="sendCommand('plomb')">
+                <span>🔍</span>
+                Обработка пломб
+            </button>
+            
+            <button class="menu-button" onclick="sendCommand('guarantee')">
+                <span>📋</span>
+                Реестр гарантии
+            </button>
+            
+            <button class="menu-button" onclick="sendCommand('scan')">
+                <span>📦</span>
+                Сканировать штрихкоды
+            </button>
+            
+            <button class="menu-button" onclick="sendCommand('template')">
+                <span>📎</span>
+                Загрузить шаблон
+            </button>
+            
+            <button class="menu-button" onclick="sendCommand('qr')">
+                <span>📲</span>
+                Генерация QR-кодов
+            </button>
+            
+            <button class="menu-button" onclick="sendCommand('supply')">
+                <span>🚚</span>
+                Новая поставка
+            </button>
+            
+            <button class="menu-button full-width" onclick="sendCommand('help')">
+                <span>❓</span>
+                Помощь
+            </button>
+        </div>
+        
+        <div class="footer">
+            <div id="user-info">Загрузка...</div>
+        </div>
+    </div>
+
+    <script>
+        // Инициализация Telegram Web App
+        const tg = window.Telegram.WebApp;
+        
+        // Сообщаем Telegram, что приложение готово
+        tg.ready();
+        
+        // Растягиваем на всю высоту
+        tg.expand();
+        
+        // Получаем информацию о пользователе
+        const user = tg.initDataUnsafe?.user;
+        if (user) {
+            document.getElementById('user-info').innerHTML = 
+                `👤 ${user.first_name} ${user.last_name || ''}<br>ID: ${user.id}`;
+        } else {
+            document.getElementById('user-info').innerHTML = '👤 Пользователь не определён';
+        }
+        
+        // Функция отправки команды в бота
+        function sendCommand(command) {
+            // Создаем данные для отправки
+            const data = JSON.stringify({
+                action: command,
+                user_id: user?.id,
+                timestamp: Date.now()
+            });
+            
+            // Отправляем данные в бота и закрываем приложение
+            tg.sendData(data);
+            tg.close();
+        }
+        
+        // Показываем основную кнопку при наведении (опционально)
+        tg.MainButton.setText('Выберите действие');
+        tg.MainButton.hide();
+        
+        // Обработка кнопки "Назад" в Telegram
+        tg.onEvent('backButtonClicked', function() {
+            tg.close();
+        });
+    </script>
 </body>
 </html>
