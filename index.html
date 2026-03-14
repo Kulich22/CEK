@@ -1,682 +1,206 @@
-<!DOCTYPE html>
-<html lang="ru">
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-  <title>CEK store</title>
-  <script src="https://telegram.org/js/telegram-web-app.js"></script>
-  <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      background-color: var(--tg-theme-bg-color, #1c1c1e);
-      color: var(--tg-theme-text-color, #ffffff);
-      min-height: 100vh;
-      padding: 16px 16px 32px;
-    }
-
-    .header { text-align: center; margin-bottom: 28px; padding-top: 8px; }
-    .header-icon { font-size: 40px; display: block; margin-bottom: 8px; }
-    .header h1 { font-size: 20px; font-weight: 700; margin-bottom: 4px; }
-    .header p { font-size: 13px; color: var(--tg-theme-hint-color, #8e8e93); }
-
-    .grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
-      margin-bottom: 10px;
-    }
-
-    .btn {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      padding: 18px 10px;
-      border-radius: 14px;
-      border: none;
-      cursor: pointer;
-      background-color: var(--tg-theme-secondary-bg-color, #2c2c2e);
-      color: var(--tg-theme-text-color, #ffffff);
-      font-size: 13px;
-      font-weight: 500;
-      text-align: center;
-      line-height: 1.3;
-      min-height: 90px;
-      transition: opacity 0.12s, transform 0.1s;
-      -webkit-user-select: none;
-      user-select: none;
-    }
-
-    .btn:active { opacity: 0.65; transform: scale(0.96); }
-    .btn .icon { font-size: 26px; line-height: 1; }
-
-    .btn-full {
-      display: flex;
-      flex-direction: row;
-      align-items: center;
-      justify-content: center;
-      gap: 10px;
-      min-height: 54px;
-      padding: 14px 20px;
-      border-radius: 14px;
-      border: none;
-      cursor: pointer;
-      background-color: var(--tg-theme-secondary-bg-color, #2c2c2e);
-      color: var(--tg-theme-text-color, #ffffff);
-      font-size: 14px;
-      font-weight: 500;
-      width: 100%;
-      margin-bottom: 10px;
-      transition: opacity 0.12s, transform 0.1s;
-    }
-
-    .btn-full:active { opacity: 0.65; transform: scale(0.98); }
-
-    .user-info {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      margin-top: 16px;
-      padding: 10px;
-      border-radius: 12px;
-      background-color: var(--tg-theme-secondary-bg-color, #2c2c2e);
-      font-size: 13px;
-      color: var(--tg-theme-hint-color, #8e8e93);
-    }
-
-    .user-info strong { color: var(--tg-theme-text-color, #ffffff); }
-
-    .overlay {
-      display: none;
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0.6);
-      align-items: center;
-      justify-content: center;
-      z-index: 100;
-      flex-direction: column;
-      gap: 14px;
-    }
-
-    .overlay.active { display: flex; }
-
-    .spinner {
-      width: 36px; height: 36px;
-      border: 3px solid rgba(255,255,255,0.2);
-      border-top-color: #fff;
-      border-radius: 50%;
-      animation: spin 0.75s linear infinite;
-    }
-
-    @keyframes spin { to { transform: rotate(360deg); } }
-
-    .overlay-text {
-      font-size: 16px;
-      font-weight: 600;
-      color: #fff;
-      text-align: center;
-      padding: 0 24px;
-    }
-
-    .toast {
-      display: none;
-      position: fixed;
-      bottom: 24px;
-      left: 16px; right: 16px;
-      background: #c0392b;
-      color: #fff;
-      padding: 14px 16px;
-      border-radius: 12px;
-      font-size: 13px;
-      font-weight: 500;
-      z-index: 200;
-      text-align: center;
-    }
-
-    .toast.active { display: block; }
-
-    #debug-box {
-      display: none;
-      margin-top: 12px;
-      padding: 10px;
-      border-radius: 10px;
-      background: #111;
-      color: #00ff88;
-      font-size: 11px;
-      font-family: monospace;
-      word-break: break-all;
-      white-space: pre-wrap;
-    }
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta http-equiv="Content-Style-Type" content="text/css">
+  <title></title>
+  <meta name="Generator" content="Cocoa HTML Writer">
+  <meta name="CocoaVersion" content="2685.4">
+  <style type="text/css">
+    p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; -webkit-text-stroke: #000000}
+    p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; -webkit-text-stroke: #000000; min-height: 14.0px}
+    span.s1 {font-kerning: none}
   </style>
 </head>
 <body>
-
-  <div class="header">
-    <span class="header-icon">🤖</span>
-    <h1>Бот для работы со счётчиками</h1>
-    <p>Выберите нужный режим работы</p>
-  </div>
-
-  <div class="grid">
-    <button class="btn" onclick="sendAction('plomb')">
-      <span class="icon">🔍</span>
-      <span>Обработка пломб</span>
-    </button>
-    <button class="btn" onclick="sendAction('guarantee')">
-      <span class="icon">📋</span>
-      <span>Реестр гарантии</span>
-    </button>
-    <button class="btn" onclick="sendAction('scan')">
-      <span class="icon">📦</span>
-      <span>Сканировать штрихкоды</span>
-    </button>
-    <button class="btn" onclick="sendAction('template')">
-      <span class="icon">📎</span>
-      <span>Загрузить шаблон</span>
-    </button>
-    <button class="btn" onclick="sendAction('qr')">
-      <span class="icon">📲</span>
-      <span>Генерация QR-кодов</span>
-    </button>
-    <button class="btn" onclick="sendAction('supply')">
-      <span class="icon">🚚</span>
-      <span>Новая поставка</span>
-    </button>
-  </div>
-
-  <button class="btn-full" onclick="sendAction('help')">
-    <span style="font-size:20px">❓</span>
-    <span>Помощь</span>
-  </button>
-
-  <div class="user-info" id="user-info">👤 Загрузка...</div>
-
-  <div id="debug-box"></div>
-
-  <div class="overlay" id="overlay">
-    <div class="spinner"></div>
-    <div class="overlay-text" id="overlay-text">Отправляю...</div>
-  </div>
-
-  <div class="toast" id="toast"></div>
-
-  <script>
-    const tg = window.Telegram.WebApp;
-    tg.ready();
-    tg.expand();
-
-    const user = tg.initDataUnsafe?.user;
-
-    const userInfoEl = document.getElementById('user-info');
-    if (user) {
-      const name = [user.first_name, user.last_name].filter(Boolean).join(' ') || 'Пользователь';
-      userInfoEl.innerHTML = '👤 <strong>' + name + '</strong> &nbsp;·&nbsp; ID: ' + user.id;
-    } else {
-      userInfoEl.textContent = '⚠️ Откройте через Telegram';
-    }
-
-    // Тройной тап — показать отладку
-    let tapCount = 0;
-    userInfoEl.addEventListener('click', function() {
-      tapCount++;
-      if (tapCount >= 3) {
-        tapCount = 0;
-        const box = document.getElementById('debug-box');
-        box.style.display = 'block';
-        box.textContent =
-          'initData: ' + (tg.initData ? tg.initData.substring(0, 100) + '...' : 'ПУСТО — не в Telegram!') + '\n' +
-          'platform: ' + tg.platform + '\n' +
-          'version: ' + tg.version + '\n' +
-          'user: ' + JSON.stringify(user) + '\n' +
-          'isExpanded: ' + tg.isExpanded;
-      }
-    });
-
-    var labels = {
-      plomb:     '🔍 Запускаю обработку пломб...',
-      guarantee: '📋 Запускаю реестр гарантии...',
-      scan:      '📦 Запускаю сканирование...',
-      template:  '📎 Запускаю загрузку шаблона...',
-      qr:        '📲 Запускаю генерацию QR...',
-      supply:    '🚚 Запускаю новую поставку...',
-      help:      '❓ Открываю справку...'
-    };
-
-    function showOverlay(text) {
-      document.getElementById('overlay-text').textContent = text;
-      document.getElementById('overlay').classList.add('active');
-    }
-
-    function hideOverlay() {
-      document.getElementById('overlay').classList.remove('active');
-    }
-
-    function showToast(msg) {
-      var el = document.getElementById('toast');
-      el.textContent = msg;
-      el.classList.add('active');
-      setTimeout(function() { el.classList.remove('active'); }, 5000);
-    }
-
-    function sendAction(action) {
-      if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('light');
-
-      showOverlay(labels[action] || 'Отправляю...');
-
-      setTimeout(function() {
-        try {
-          if (!tg.initData) {
-            hideOverlay();
-            showToast('⚠️ Откройте через кнопку в боте, не напрямую в браузере');
-            return;
-          }
-
-          var data = JSON.stringify({
-            action: action,
-            user_id: user ? user.id : null,
-            timestamp: Date.now()
-          });
-
-          tg.sendData(data);
-
-          // Страховка: если через 3 сек не закрылось — значит sendData не работает
-          setTimeout(function() {
-            hideOverlay();
-            showToast('❌ Не удалось отправить данные. Нажмите "Закрыть" и напишите боту /start');
-          }, 3000);
-
-        } catch(e) {
-          hideOverlay();
-          showToast('❌ Ошибка: ' + e.message);
-        }
-      }, 250);
-    }
-  </script>
-
-</body>
-</html>      font-size: 22px;
-      font-weight: 700;
-      margin-bottom: 6px;
-      color: var(--tg-theme-text-color, #ffffff);
-    }
-
-    .header p {
-      font-size: 14px;
-      color: var(--tg-theme-hint-color, #8e8e93);
-    }
-
-    .grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
-      margin-bottom: 12px;
-    }
-
-    .grid-full {
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 12px;
-      margin-bottom: 24px;
-    }
-
-    .btn {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      padding: 20px 12px;
-      border-radius: 16px;
-      border: none;
-      cursor: pointer;
-      background-color: var(--tg-theme-secondary-bg-color, #2c2c2e);
-      color: var(--tg-theme-text-color, #ffffff);
-      font-size: 14px;
-      font-weight: 500;
-      text-align: center;
-      line-height: 1.3;
-      transition: opacity 0.15s ease, transform 0.1s ease;
-      min-height: 100px;
-      -webkit-user-select: none;
-      user-select: none;
-    }
-
-    .btn:active {
-      opacity: 0.7;
-      transform: scale(0.97);
-    }
-
-    .btn-icon {
-      font-size: 28px;
-      line-height: 1;
-    }
-
-    .btn-label {
-      font-size: 13px;
-      font-weight: 500;
-    }
-
-    .btn-help {
-      min-height: 70px;
-      flex-direction: row;
-      gap: 12px;
-      padding: 16px 20px;
-    }
-
-    .btn-help .btn-icon {
-      font-size: 22px;
-    }
-
-    .btn-help .btn-label {
-      font-size: 14px;
-    }
-
-    .user-info {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      margin-top: 8px;
-      padding: 10px;
-      border-radius: 12px;
-      background-color: var(--tg-theme-secondary-bg-color, #2c2c2e);
-      font-size: 13px;
-      color: var(--tg-theme-hint-color, #8e8e93);
-    }
-
-    .user-info strong {
-      color: var(--tg-theme-text-color, #ffffff);
-    }
-
-    /* Overlay при отправке */
-    .sending-overlay {
-      display: none;
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0.5);
-      align-items: center;
-      justify-content: center;
-      z-index: 999;
-      flex-direction: column;
-      gap: 12px;
-      color: #fff;
-      font-size: 16px;
-      font-weight: 500;
-    }
-
-    .sending-overlay.active {
-      display: flex;
-    }
-
-    .spinner {
-      width: 32px;
-      height: 32px;
-      border: 3px solid rgba(255,255,255,0.2);
-      border-top-color: #fff;
-      border-radius: 50%;
-      animation: spin 0.8s linear infinite;
-    }
-
-    @keyframes spin {
-      to { transform: rotate(360deg); }
-    }
-  </style>
-</head>
-<body>
-
-  <div class="header">
-    <span class="header-icon">🤖</span>
-    <h1>Бот для работы со счётчиками</h1>
-    <p>Выберите нужный режим работы</p>
-  </div>
-
-  <div class="grid">
-    <button class="btn" onclick="sendAction('plomb')">
-      <span class="btn-icon">🔍</span>
-      <span class="btn-label">Обработка пломб</span>
-    </button>
-    <button class="btn" onclick="sendAction('guarantee')">
-      <span class="btn-icon">📋</span>
-      <span class="btn-label">Реестр гарантии</span>
-    </button>
-    <button class="btn" onclick="sendAction('scan')">
-      <span class="btn-icon">📦</span>
-      <span class="btn-label">Сканировать штрихкоды</span>
-    </button>
-    <button class="btn" onclick="sendAction('template')">
-      <span class="btn-icon">📎</span>
-      <span class="btn-label">Загрузить шаблон</span>
-    </button>
-    <button class="btn" onclick="sendAction('qr')">
-      <span class="btn-icon">📲</span>
-      <span class="btn-label">Генерация QR-кодов</span>
-    </button>
-    <button class="btn" onclick="sendAction('supply')">
-      <span class="btn-icon">🚚</span>
-      <span class="btn-label">Новая поставка</span>
-    </button>
-  </div>
-
-  <div class="grid-full">
-    <button class="btn btn-help" onclick="sendAction('help')">
-      <span class="btn-icon">❓</span>
-      <span class="btn-label">Помощь</span>
-    </button>
-  </div>
-
-  <div class="user-info" id="user-info">
-    👤 Загрузка...
-  </div>
-
-  <div class="sending-overlay" id="overlay">
-    <div class="spinner"></div>
-    <span id="overlay-text">Отправляю команду...</span>
-  </div>
-
-  <script>
-    // Инициализация Telegram WebApp
-    const tg = window.Telegram.WebApp;
-    tg.ready();
-    tg.expand();
-
-    // Показываем данные пользователя
-    const user = tg.initDataUnsafe?.user;
-    const userInfoEl = document.getElementById('user-info');
-
-    if (user) {
-      const name = [user.first_name, user.last_name].filter(Boolean).join(' ') || 'Пользователь';
-      userInfoEl.innerHTML = `👤 <strong>${name}</strong> &nbsp;·&nbsp; ID: ${user.id}`;
-    } else {
-      userInfoEl.innerHTML = '👤 <strong>Откройте через Telegram</strong>';
-    }
-
-    // Маппинг action → текст оверлея
-    const actionLabels = {
-      plomb:     '🔍 Запускаю обработку пломб...',
-      guarantee: '📋 Запускаю реестр гарантии...',
-      scan:      '📦 Запускаю сканирование штрихкодов...',
-      template:  '📎 Запускаю загрузку шаблона...',
-      qr:        '📲 Запускаю генерацию QR-кодов...',
-      supply:    '🚚 Запускаю новую поставку...',
-      help:      '❓ Открываю справку...',
-    };
-
-    function sendAction(action) {
-      // Тактильная обратная связь (если поддерживается)
-      if (tg.HapticFeedback) {
-        tg.HapticFeedback.impactOccurred('light');
-      }
-
-      // Показываем оверлей
-      const overlay = document.getElementById('overlay');
-      const overlayText = document.getElementById('overlay-text');
-      overlayText.textContent = actionLabels[action] || 'Отправляю команду...';
-      overlay.classList.add('active');
-
-      // Небольшая задержка чтобы пользователь увидел анимацию
-      setTimeout(() => {
-        // Формируем данные для бота
-        const data = JSON.stringify({
-          action: action,
-          user_id: user ? user.id : null,
-          timestamp: Date.now()
-        });
-
-        // Отправляем данные в бота и закрываем Mini App
-        tg.sendData(data);
-      }, 300);
-    }
-  </script>
-
-</body>
-</html>        }
-        
-        .menu-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 12px;
-            margin-bottom: 20px;
-        }
-        
-        .menu-button {
-            background: var(--tg-theme-button-color, #40a7e3);
-            color: var(--tg-theme-button-text-color, #ffffff);
-            border: none;
-            border-radius: 12px;
-            padding: 16px 12px;
-            font-size: 14px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: opacity 0.2s;
-            text-align: center;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 8px;
-            width: 100%;
-        }
-        
-        .menu-button:active {
-            opacity: 0.8;
-        }
-        
-        .menu-button span {
-            font-size: 24px;
-        }
-        
-        .full-width {
-            grid-column: span 2;
-        }
-        
-        .footer {
-            text-align: center;
-            margin-top: 30px;
-            color: var(--tg-theme-hint-color, #999999);
-            font-size: 12px;
-            padding: 20px 0;
-        }
-        
-        /* Темная тема */
-        @media (prefers-color-scheme: dark) {
-            body {
-                background: var(--tg-theme-bg-color, #1c1c1e);
-                color: var(--tg-theme-text-color, #ffffff);
-            }
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <h1>🤖 Бот для работы со счётчиками</h1>
-        <div class="subtitle">Выберите нужный режим работы</div>
-        
-        <div class="menu-grid">
-            <button class="menu-button" onclick="sendCommand('plomb')">
-                <span>🔍</span>
-                Обработка пломб
-            </button>
-            
-            <button class="menu-button" onclick="sendCommand('guarantee')">
-                <span>📋</span>
-                Реестр гарантии
-            </button>
-            
-            <button class="menu-button" onclick="sendCommand('scan')">
-                <span>📦</span>
-                Сканировать штрихкоды
-            </button>
-            
-            <button class="menu-button" onclick="sendCommand('template')">
-                <span>📎</span>
-                Загрузить шаблон
-            </button>
-            
-            <button class="menu-button" onclick="sendCommand('qr')">
-                <span>📲</span>
-                Генерация QR-кодов
-            </button>
-            
-            <button class="menu-button" onclick="sendCommand('supply')">
-                <span>🚚</span>
-                Новая поставка
-            </button>
-            
-            <button class="menu-button full-width" onclick="sendCommand('help')">
-                <span>❓</span>
-                Помощь
-            </button>
-        </div>
-        
-        <div class="footer">
-            <div id="user-info">Загрузка...</div>
-        </div>
-    </div>
-
-    <script>
-        // Инициализация Telegram Web App
-        const tg = window.Telegram.WebApp;
-        
-        // Сообщаем Telegram, что приложение готово
-        tg.ready();
-        
-        // Растягиваем на всю высоту
-        tg.expand();
-        
-        // Получаем информацию о пользователе
-        const user = tg.initDataUnsafe?.user;
-        if (user) {
-            document.getElementById('user-info').innerHTML = 
-                `👤 ${user.first_name} ${user.last_name || ''}<br>ID: ${user.id}`;
-        } else {
-            document.getElementById('user-info').innerHTML = '👤 Пользователь не определён';
-        }
-        
-        // Функция отправки команды в бота
-        function sendCommand(command) {
-            // Создаем данные для отправки
-            const data = JSON.stringify({
-                action: command,
-                user_id: user?.id,
-                timestamp: Date.now()
-            });
-            
-            // Отправляем данные в бота и закрываем приложение
-            tg.sendData(data);
-            tg.close();
-        }
-        
-        // Показываем основную кнопку при наведении (опционально)
-        tg.MainButton.setText('Выберите действие');
-        tg.MainButton.hide();
-        
-        // Обработка кнопки "Назад" в Telegram
-        tg.onEvent('backButtonClicked', function() {
-            tg.close();
-        });
-    </script>
+<p class="p1"><span class="s1">&lt;!DOCTYPE html&gt;</span></p>
+<p class="p1"><span class="s1">&lt;html lang="ru"&gt;</span></p>
+<p class="p1"><span class="s1">&lt;head&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>&lt;meta charset="UTF-8"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>&lt;meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>&lt;title&gt;CEK store&lt;/title&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>&lt;script src="https://telegram.org/js/telegram-web-app.js"&gt;&lt;/script&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>&lt;style&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>* { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>body {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>background-color: var(--tg-theme-bg-color, #1c1c1e);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>color: var(--tg-theme-text-color, #ffffff);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>min-height: 100vh;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>padding: 16px 16px 32px;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>}</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>.header { text-align: center; margin-bottom: 28px; padding-top: 8px; }</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>.header-icon { font-size: 40px; display: block; margin-bottom: 8px; }</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>.header h1 { font-size: 20px; font-weight: 700; margin-bottom: 4px; }</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>.header p { font-size: 13px; color: var(--tg-theme-hint-color, #8e8e93); }</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>.grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>.btn {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>display: flex; flex-direction: column; align-items: center; justify-content: center;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>gap: 8px; padding: 18px 10px; border-radius: 14px; border: none; cursor: pointer;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>background-color: var(--tg-theme-secondary-bg-color, #2c2c2e);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>color: var(--tg-theme-text-color, #ffffff);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>font-size: 13px; font-weight: 500; text-align: center; line-height: 1.3;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>min-height: 90px; -webkit-user-select: none; user-select: none;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>}</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>.btn:active { opacity: 0.6; transform: scale(0.96); }</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>.icon { font-size: 26px; line-height: 1; }</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>.btn-full {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>display: flex; flex-direction: row; align-items: center; justify-content: center;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>gap: 10px; min-height: 54px; padding: 14px 20px; border-radius: 14px; border: none;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>cursor: pointer; background-color: var(--tg-theme-secondary-bg-color, #2c2c2e);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>color: var(--tg-theme-text-color, #ffffff); font-size: 14px; font-weight: 500;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>width: 100%; margin-bottom: 10px;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>}</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>.btn-full:active { opacity: 0.6; transform: scale(0.98); }</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>.user-info {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>display: flex; align-items: center; justify-content: center; gap: 8px;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>margin-top: 16px; padding: 10px; border-radius: 12px;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>background-color: var(--tg-theme-secondary-bg-color, #2c2c2e);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>font-size: 13px; color: var(--tg-theme-hint-color, #8e8e93);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>}</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>.user-info strong { color: var(--tg-theme-text-color, #ffffff); }</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>.overlay {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>align-items: center; justify-content: center; z-index: 100;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>flex-direction: column; gap: 14px;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>}</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>.overlay.active { display: flex; }</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>.spinner {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>width: 36px; height: 36px; border: 3px solid rgba(255,255,255,0.2);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>border-top-color: #fff; border-radius: 50%; animation: spin 0.75s linear infinite;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>}</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>@keyframes spin { to { transform: rotate(360deg); } }</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>.overlay-text { font-size: 16px; font-weight: 600; color: #fff; text-align: center; padding: 0 24px; }</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>.toast {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>display: none; position: fixed; bottom: 24px; left: 16px; right: 16px;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>background: #c0392b; color: #fff; padding: 14px 16px; border-radius: 12px;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>font-size: 13px; font-weight: 500; z-index: 200; text-align: center;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>}</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>.toast.active { display: block; }</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>#debug { display: none; margin-top: 12px; padding: 10px; border-radius: 10px;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>background: #111; color: #0f0; font-size: 11px; font-family: monospace;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>word-break: break-all; white-space: pre-wrap; }</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>&lt;/style&gt;</span></p>
+<p class="p1"><span class="s1">&lt;/head&gt;</span></p>
+<p class="p1"><span class="s1">&lt;body&gt;</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1">&lt;div class="header"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>&lt;span class="header-icon"&gt;🤖&lt;/span&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>&lt;h1&gt;Бот для работы со счётчиками&lt;/h1&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>&lt;p&gt;Выберите нужный режим работы&lt;/p&gt;</span></p>
+<p class="p1"><span class="s1">&lt;/div&gt;</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1">&lt;div class="grid"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>&lt;button class="btn" onclick="sendAction('plomb')"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;span class="icon"&gt;🔍&lt;/span&gt;&lt;span&gt;Обработка пломб&lt;/span&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>&lt;/button&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>&lt;button class="btn" onclick="sendAction('guarantee')"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;span class="icon"&gt;📋&lt;/span&gt;&lt;span&gt;Реестр гарантии&lt;/span&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>&lt;/button&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>&lt;button class="btn" onclick="sendAction('scan')"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;span class="icon"&gt;📦&lt;/span&gt;&lt;span&gt;Сканировать штрихкоды&lt;/span&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>&lt;/button&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>&lt;button class="btn" onclick="sendAction('template')"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;span class="icon"&gt;📎&lt;/span&gt;&lt;span&gt;Загрузить шаблон&lt;/span&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>&lt;/button&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>&lt;button class="btn" onclick="sendAction('qr')"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;span class="icon"&gt;📲&lt;/span&gt;&lt;span&gt;Генерация QR-кодов&lt;/span&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>&lt;/button&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>&lt;button class="btn" onclick="sendAction('supply')"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;span class="icon"&gt;🚚&lt;/span&gt;&lt;span&gt;Новая поставка&lt;/span&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>&lt;/button&gt;</span></p>
+<p class="p1"><span class="s1">&lt;/div&gt;</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1">&lt;button class="btn-full" onclick="sendAction('help')"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>&lt;span style="font-size:20px"&gt;❓&lt;/span&gt;&lt;span&gt;Помощь&lt;/span&gt;</span></p>
+<p class="p1"><span class="s1">&lt;/button&gt;</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1">&lt;div class="user-info" id="user-info"&gt;👤 Загрузка...&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1">&lt;div id="debug"&gt;&lt;/div&gt;</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1">&lt;div class="overlay" id="overlay"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>&lt;div class="spinner"&gt;&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>&lt;div class="overlay-text" id="overlay-text"&gt;Отправляю...&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1">&lt;/div&gt;</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1">&lt;div class="toast" id="toast"&gt;&lt;/div&gt;</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1">&lt;script&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>var tg = window.Telegram.WebApp;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>tg.ready();</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>tg.expand();</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>var user = tg.initDataUnsafe &amp;&amp; tg.initDataUnsafe.user;</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>var userEl = document.getElementById('user-info');</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>if (user) {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>var name = [user.first_name, user.last_name].filter(Boolean).join(' ') || 'Пользователь';</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>userEl.innerHTML = '👤 &lt;strong&gt;' + name + '&lt;/strong&gt; &amp;nbsp;·&amp;nbsp; ID: ' + user.id;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>} else {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>userEl.textContent = '👤 Пользователь';</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>}</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>// Тройной тап — показать отладку</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>var taps = 0;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>userEl.addEventListener('click', function() {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>taps++;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>if (taps &gt;= 3) {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>taps = 0;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>var d = document.getElementById('debug');</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>d.style.display = 'block';</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>d.textContent =</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>'platform: ' + tg.platform + '\n' +</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>'version: ' + tg.version + '\n' +</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>'initData пустой: ' + (!tg.initData) + '\n' +</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>'user: ' + JSON.stringify(user);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>}</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>});</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>var labels = {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>plomb: '🔍 Запускаю обработку пломб...',</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>guarantee: '📋 Запускаю реестр гарантии...',</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>scan: '📦 Запускаю сканирование...',</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>template: '📎 Запускаю загрузку шаблона...',</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>qr: '📲 Запускаю генерацию QR...',</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>supply: '🚚 Запускаю новую поставку...',</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>help: '❓ Открываю справку...'</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>};</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>function sendAction(action) {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('light');</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>document.getElementById('overlay-text').textContent = labels[action] || 'Отправляю...';</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>document.getElementById('overlay').classList.add('active');</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>setTimeout(function() {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>try {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>var data = JSON.stringify({</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>action: action,</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>user_id: user ? user.id : null,</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>timestamp: Date.now()</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>});</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>tg.sendData(data);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>// sendData закрывает Mini App автоматически.</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>// Если через 4 сек ничего не случилось — показываем ошибку.</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>setTimeout(function() {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>document.getElementById('overlay').classList.remove('active');</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>var t = document.getElementById('toast');</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>t.textContent = '❌ sendData не сработал. Нажмите 3 раза на имя внизу для диагностики.';</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>t.classList.add('active');</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>setTimeout(function() { t.classList.remove('active'); }, 6000);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>}, 4000);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>} catch(e) {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>document.getElementById('overlay').classList.remove('active');</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>var t = document.getElementById('toast');</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>t.textContent = '❌ Ошибка: ' + e.message;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>t.classList.add('active');</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>setTimeout(function() { t.classList.remove('active'); }, 6000);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>}</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>}, 250);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>}</span></p>
+<p class="p1"><span class="s1">&lt;/script&gt;</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1">&lt;/body&gt;</span></p>
+<p class="p1"><span class="s1">&lt;/html&gt;</span></p>
 </body>
 </html>
