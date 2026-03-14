@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>CEK store</title>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background-color: var(--tg-theme-bg-color, #1c1c1e);
+      color: var(--tg-theme-text-color, #ffffff);
+      min-height: 100vh;
+      padding: 16px 16px 32px;
+    }
+    .header { text-align: center; margin-bottom: 28px; padding-top: 8px; }
+    .header-icon { font-size: 40px; display: block; margin-bottom: 8px; }
+    .header h1 { font-size: 20px; font-weight: 700; margin-bottom: 4px; }
+    .header p { font-size: 13px; color: var(--tg-theme-hint-color, #8e8e93); }
+    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
+    .btn {
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      gap: 8px; padding: 18px 10px; border-radius: 14px; border: none; cursor: pointer;
+      background-color: var(--tg-theme-secondary-bg-color, #2c2c2e);
+      color: var(--tg-theme-text-color, #ffffff);
+      font-size: 13px; font-weight: 500; text-align: center; line-height: 1.3;
+      min-height: 90px; -webkit-user-select: none; user-select: none;
+    }
+    .btn:active { opacity: 0.6; transform: scale(0.96); }
+    .icon { font-size: 26px; line-height: 1; }
+    .btn-full {
+      display: flex; flex-direction: row; align-items: center; justify-content: center;
+      gap: 10px; min-height: 54px; padding: 14px 20px; border-radius: 14px; border: none;
+      cursor: pointer; background-color: var(--tg-theme-secondary-bg-color, #2c2c2e);
+      color: var(--tg-theme-text-color, #ffffff); font-size: 14px; font-weight: 500;
+      width: 100%; margin-bottom: 10px;
+    }
+    .btn-full:active { opacity: 0.6; transform: scale(0.98); }
+    .user-info {
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+      margin-top: 16px; padding: 10px; border-radius: 12px;
+      background-color: var(--tg-theme-secondary-bg-color, #2c2c2e);
+      font-size: 13px; color: var(--tg-theme-hint-color, #8e8e93);
+    }
+    .user-info strong { color: var(--tg-theme-text-color, #ffffff); }
+    .overlay {
+      display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6);
+      align-items: center; justify-content: center; z-index: 100;
+      flex-direction: column; gap: 14px;
+    }
+    .overlay.active { display: flex; }
+    .spinner {
+      width: 36px; height: 36px; border: 3px solid rgba(255,255,255,0.2);
+      border-top-color: #fff; border-radius: 50%; animation: spin 0.75s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .overlay-text { font-size: 16px; font-weight: 600; color: #fff; text-align: center; padding: 0 24px; }
+    .toast {
+      display: none; position: fixed; bottom: 24px; left: 16px; right: 16px;
+      background: #c0392b; color: #fff; padding: 14px 16px; border-radius: 12px;
+      font-size: 13px; font-weight: 500; z-index: 200; text-align: center;
+    }
+    .toast.active { display: block; }
+    #debug { display: none; margin-top: 12px; padding: 10px; border-radius: 10px;
+      background: #111; color: #0f0; font-size: 11px; font-family: monospace;
+      word-break: break-all; white-space: pre-wrap; }
+  </style>
+</head>
+<body>
+
+<div class="header">
+  <span class="header-icon">🤖</span>
+  <h1>Бот для работы со счётчиками</h1>
+  <p>Выберите нужный режим работы</p>
+</div>
+
+<div class="grid">
+  <button class="btn" onclick="sendAction('plomb')">
+    <span class="icon">🔍</span><span>Обработка пломб</span>
+  </button>
+  <button class="btn" onclick="sendAction('guarantee')">
+    <span class="icon">📋</span><span>Реестр гарантии</span>
+  </button>
+  <button class="btn" onclick="sendAction('scan')">
+    <span class="icon">📦</span><span>Сканировать штрихкоды</span>
+  </button>
+  <button class="btn" onclick="sendAction('template')">
+    <span class="icon">📎</span><span>Загрузить шаблон</span>
+  </button>
+  <button class="btn" onclick="sendAction('qr')">
+    <span class="icon">📲</span><span>Генерация QR-кодов</span>
+  </button>
+  <button class="btn" onclick="sendAction('supply')">
+    <span class="icon">🚚</span><span>Новая поставка</span>
+  </button>
+</div>
+
+<button class="btn-full" onclick="sendAction('help')">
+  <span style="font-size:20px">❓</span><span>Помощь</span>
+</button>
+
+<div class="user-info" id="user-info">👤 Загрузка...</div>
+<div id="debug"></div>
+
+<div class="overlay" id="overlay">
+  <div class="spinner"></div>
+  <div class="overlay-text" id="overlay-text">Отправляю...</div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+  var tg = window.Telegram.WebApp;
+  tg.ready();
+  tg.expand();
+
+  var user = tg.initDataUnsafe && tg.initDataUnsafe.user;
+
+  var userEl = document.getElementById('user-info');
+  if (user) {
+    var name = [user.first_name, user.last_name].filter(Boolean).join(' ') || 'Пользователь';
+    userEl.innerHTML = '👤 <strong>' + name + '</strong> &nbsp;·&nbsp; ID: ' + user.id;
+  } else {
+    userEl.textContent = '👤 Пользователь';
+  }
+
+  // Тройной тап — показать отладку
+  var taps = 0;
+  userEl.addEventListener('click', function() {
+    taps++;
+    if (taps >= 3) {
+      taps = 0;
+      var d = document.getElementById('debug');
+      d.style.display = 'block';
+      d.textContent =
+        'platform: ' + tg.platform + '\n' +
+        'version: ' + tg.version + '\n' +
+        'initData пустой: ' + (!tg.initData) + '\n' +
+        'user: ' + JSON.stringify(user);
+    }
+  });
+
+  var labels = {
+    plomb: '🔍 Запускаю обработку пломб...',
+    guarantee: '📋 Запускаю реестр гарантии...',
+    scan: '📦 Запускаю сканирование...',
+    template: '📎 Запускаю загрузку шаблона...',
+    qr: '📲 Запускаю генерацию QR...',
+    supply: '🚚 Запускаю новую поставку...',
+    help: '❓ Открываю справку...'
+  };
+
+  function sendAction(action) {
+    if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('light');
+
+    document.getElementById('overlay-text').textContent = labels[action] || 'Отправляю...';
+    document.getElementById('overlay').classList.add('active');
+
+    setTimeout(function() {
+      try {
+        var data = JSON.stringify({
+          action: action,
+          user_id: user ? user.id : null,
+          timestamp: Date.now()
+        });
+        tg.sendData(data);
+        // sendData закрывает Mini App автоматически.
+        // Если через 4 сек ничего не случилось — показываем ошибку.
+        setTimeout(function() {
+          document.getElementById('overlay').classList.remove('active');
+          var t = document.getElementById('toast');
+          t.textContent = '❌ sendData не сработал. Нажмите 3 раза на имя внизу для диагностики.';
+          t.classList.add('active');
+          setTimeout(function() { t.classList.remove('active'); }, 6000);
+        }, 4000);
+      } catch(e) {
+        document.getElementById('overlay').classList.remove('active');
+        var t = document.getElementById('toast');
+        t.textContent = '❌ Ошибка: ' + e.message;
+        t.classList.add('active');
+        setTimeout(function() { t.classList.remove('active'); }, 6000);
+      }
+    }, 250);
+  }
+</script>
+
+</body>
+</html>
